@@ -13,18 +13,11 @@ from functools import wraps
 import os
 from dotenv import load_dotenv
 
-
-def create_app():
-    app = Flask(__name__)
-    with app.app_context():
-        app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv("DATABASE_URL")
-    return app
-
-
-app = create_app()
+load_dotenv()
+app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv("DATABASE_URL")
 app.config['SECRET_KEY'] = '8BYkEfBA6O6donzWlSihBXox7C0sKR6b'
 ckeditor = CKEditor(app)
-load_dotenv()
 Bootstrap(app)
 gravatar = Gravatar(app,
                     size=100,
