@@ -14,11 +14,22 @@ import os
 from dotenv import load_dotenv
 
 load_dotenv()
-app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv("DATABASE_URL")
-app.config['SECRET_KEY'] = '8BYkEfBA6O6donzWlSihBXox7C0sKR6b'
+
+
+def run_app():
+    app = Flask(__name__)
+    app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv("DATABASE_URL")
+    app.config['SECRET_KEY'] = '8BYkEfBA6O6donzWlSihBXox7C0sKR6b'
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+    Bootstrap(app)
+    login_manager.init_app(app)
+    return app
+
+
+app = run_app()
+
+db = SQLAlchemy(app)
 ckeditor = CKEditor(app)
-Bootstrap(app)
 gravatar = Gravatar(app,
                     size=100,
                     rating='g',
@@ -29,10 +40,8 @@ gravatar = Gravatar(app,
                     base_url=None)
 
 # CONNECT TO DB
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
 login_manager = LoginManager()
-login_manager.init_app(app)
-db = SQLAlchemy(app)
 
 
 @login_manager.user_loader
