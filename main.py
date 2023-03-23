@@ -18,16 +18,14 @@ load_dotenv()
 
 def run_app():
     app = Flask(__name__)
-    app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get("DATABASE_URL")
+    app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get("DATABASE_URL", "sqlite:///blog.db")
     app.config['SECRET_KEY'] = '8BYkEfBA6O6donzWlSihBXox7C0sKR6b'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     Bootstrap(app)
-    login_manager.init_app(app)
     return app
 
 
 app = run_app()
-
 db = SQLAlchemy(app)
 ckeditor = CKEditor(app)
 gravatar = Gravatar(app,
@@ -42,6 +40,7 @@ gravatar = Gravatar(app,
 # CONNECT TO DB
 
 login_manager = LoginManager()
+login_manager.init_app(app)
 
 
 @login_manager.user_loader
@@ -92,12 +91,10 @@ class Comment(db.Model):
     parent_post = relationship("BlogPost", back_populates="child_comments")
     text = db.Column(db.Text, nullable=False)
 
-db.create_all()
-
 
 @app.route('/')
 def get_all_posts():
-
+    db.create_all()
     posts = BlogPost.query.all()
     return render_template("index.html", all_posts=posts)
 
